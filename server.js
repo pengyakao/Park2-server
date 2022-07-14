@@ -261,8 +261,6 @@ app.post('/apply/market/form/post', (req, res) => {
 // 重新上傳市集企劃書
 app.put('/apply/market/form/proposal/edit', (req, res) => {
     uploadPdf(req, res).then(fileSrc => {
-        console.log(req.body.delete)
-        console.log(req.body)
         const deleteTarget = req.body.delete.replace('http://localhost:3001/file/', './public/')
         fs.unlinkSync(deleteTarget)
         db.query(
@@ -407,6 +405,199 @@ app.put('/admin/store/edit/file', function(req, res){
                     res.send(JSON.stringify(error));
                 }else{
                     res.send(JSON.stringify(data));
+                }
+            }
+        )
+    })
+})
+
+
+
+
+// 多張圖片Api -------------------------------------------------------------------
+
+function uploadMuitiActivity(req,res) {
+    return new Promise((resolve, reject) => {
+        uploadEngineActivity.array('files')(req, res, function(err){
+            if(err) {
+                reject(err)
+            }else{
+                console.log('files', req.files)
+                let concatUrl = []
+                req.files.forEach(e=>{
+                    concatUrl.push(updateBaseUrl + activityPath + e.filename)
+                })
+                resolve(concatUrl.join(','))
+            }
+        })
+    })
+}
+
+function uploadMuitiStore(req,res) {
+    return new Promise((resolve, reject) => {
+        uploadEngineStore.array('files')(req, res, function(err){
+            if(err) {
+                reject(err)
+            }else{
+                console.log('files', req.files)
+                let concatUrl = []
+                req.files.forEach(e=>{
+                    concatUrl.push(updateBaseUrl + storePath + e.filename)
+                })
+                resolve(concatUrl.join(','))
+            }
+        })
+    })
+}
+
+
+// 活動多張圖片取得
+app.get('/admin/activity/get/file/multiple', function(req, res){
+    db.query(
+        'select * from activity_img where act_id = ?',
+        [req.query.id],
+        function (error, data) {
+            if(error){
+                res.send(JSON.stringify(error));
+            }else{
+                res.send(JSON.stringify(data));
+            }
+        }
+    )
+})
+
+// 活動多張圖片上傳
+app.post('/admin/activity/post/file/multiple', function(req, res){
+    uploadMuitiActivity(req, res).then(fileSrc => {
+        db.query(
+            'insert into activity_img (act_id, act_img_url) values (?, ?)',
+            [req.body.id, fileSrc],
+            function (error, data) {
+                if(error){
+                    res.send(JSON.stringify(error));
+                }else{
+                    res.send(JSON.stringify(data));
+                }
+            }
+        )
+    })
+})
+
+
+
+// 活動多張圖片編輯
+app.put('/admin/activity/edit/file/multiple', function(req, res){
+    uploadMuitiActivity(req, res).then(fileSrc => {
+        let stayTarget = JSON.parse(req.body.stay)
+        let finalUrl = ''
+        if(stayTarget.length != 0){
+            let concatStayUrl = []
+            stayTarget.forEach(e=>{
+                concatStayUrl.push(e)
+            })
+            let stayUrl = concatStayUrl.join(',')
+            finalUrl = stayUrl + ',' + fileSrc
+        }else{
+            finalUrl = fileSrc
+        }
+
+        let deleteTarget = JSON.parse(req.body.delete).filter(e=>e != '')
+
+        console.log('delete', deleteTarget)
+        if(deleteTarget.length != 0){
+            console.log('hello')
+            deleteTarget.forEach(e=>{
+                let deleteTarget = e.replace('http://localhost:3001/file/', './public/')
+                fs.unlinkSync(deleteTarget)
+            })
+        }
+        
+        db.query(
+            'update activity_img set act_img_url = ? where act_id = ?',
+            [finalUrl, req.body.id],
+            // [req.body, 'test', 'test', 'test', 'test', 'test', 'test', 2, true, imgsrc, '1', 'test'],
+            function (error, data) {
+                if(error){
+                    res.send(JSON.stringify(error));
+                }else{
+                    res.send(JSON.stringify(fileSrc));
+                }
+            }
+        )
+    })
+})
+
+
+
+
+
+// 店家多張圖片取得
+app.get('/admin/store/get/file/multiple', function(req, res){
+    db.query(
+        'select * from store_img where sto_id = ?',
+        [req.query.id],
+        function (error, data) {
+            if(error){
+                res.send(JSON.stringify(error));
+            }else{
+                res.send(JSON.stringify(data));
+            }
+        }
+    )
+})
+
+// 店家多張圖片上傳(目的只用於開設資料列，不用上傳圖片)
+app.post('/admin/store/post/file/multiple', function(req, res){
+    db.query(
+        'insert into activity_img (act_id) values (?)',
+        [req.body.id],
+        function (error, data) {
+            if(error){
+                res.send(JSON.stringify(error));
+            }else{
+                res.send(JSON.stringify(data));
+            }
+        }
+    )
+})
+
+
+
+// 店家多張圖片編輯
+app.put('/admin/store/edit/file/multiple', function(req, res){
+    uploadMuitiStore(req, res).then(fileSrc => {
+        let stayTarget = JSON.parse(req.body.stay)
+        let finalUrl = ''
+        if(stayTarget.length != 0){
+            let concatStayUrl = []
+            stayTarget.forEach(e=>{
+                concatStayUrl.push(e)
+            })
+            let stayUrl = concatStayUrl.join(',')
+            finalUrl = stayUrl + ',' + fileSrc
+        }else{
+            finalUrl = fileSrc
+        }
+
+        let deleteTarget = JSON.parse(req.body.delete).filter(e=>e != '')
+
+        console.log('delete', deleteTarget)
+        if(deleteTarget.length != 0){
+            deleteTarget.forEach(e=>{
+                let deleteTarget = e.replace('http://localhost:3001/file/', './public/')
+                fs.unlinkSync(deleteTarget)
+            })
+        }
+        
+        db.query(
+            'update store_img set store_img_url = ? where act_id = ?',
+            [finalUrl, req.body.id],
+            // [req.body, 'test', 'test', 'test', 'test', 'test', 'test', 2, true, imgsrc, '1', 'test'],
+            function (error, data) {
+                if(error){
+                    res.send(JSON.stringify(error));
+                }else{
+                    res.send(JSON.stringify(fileSrc));
                 }
             }
         )

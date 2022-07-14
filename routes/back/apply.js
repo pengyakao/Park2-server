@@ -33,8 +33,8 @@ router.get('/store/get', function(req, res){
 // 進駐管理/店家申請/編輯
 router.put('/store/edit', function(req, res){
     connect.query(
-        'update store_apply set sto_apply_sta = ?, sto_apply_constract = ? where sto_apply_id = ?',
-        [req.body.state, req.body.constract, req.body.id],
+        'update store_apply set sto_apply_sta = ? where sto_apply_id = ?',
+        [req.body.state, req.body.id],
         function (error, data) {
             if(error){
                 res.send(JSON.stringify(error));
