@@ -82,7 +82,7 @@ app.post('/admin/login/user', (req, res, next) => {
                 return res.status(200).send({
                     message: 'Logged in',
                     token,
-                    user: result[0]
+                    user: JSON.stringify(result[0])
                 })
             }
             // return res.status(400).send({
