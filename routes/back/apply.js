@@ -136,4 +136,37 @@ router.post('/market/add', function(req, res) {
     )
 })
 
+
+
+
+// 新增店家
+router.post('/store/add', function(req, res) {
+    connect.query(
+        'insert into store (sto_apply_id, sto_name, sto_location, sto_class, sto_tel, sto_sta) values (?, ?, ?, ?, ?, ?)',
+        [req.body.id, req.body.brand, req.body.location, req.body.type, req.body.tel, req.body.state],
+        function (error, data) {
+            if(error){
+                res.send(JSON.stringify(error));
+            }else{
+                res.send(JSON.stringify(data));
+            }     
+        }
+    )
+})
+
+// 新增帳號
+router.post('/account/add', function(req, res) {
+    connect.query(
+        'insert into user (sto_id, user_account, user_password, user_name, user_level) values (?, ?, ?, ?, ?)',
+        [req.body.id, req.body.account, req.body.password, req.body.name, req.body.level],
+        function (error, data) {
+            if(error){
+                res.send(JSON.stringify(error));
+            }else{
+                res.send(JSON.stringify(data));
+            }     
+        }
+    )
+})
+
 module.exports = router
