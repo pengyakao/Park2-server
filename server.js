@@ -1,3 +1,4 @@
+const nodemailer = require("nodemailer");
 let express = require("express");
 // let bcrypt = require('bcryptjs');
 let app = express();
@@ -53,13 +54,13 @@ app.use('/admin/apply', backStationed)
 
 // 登入 API ----------------------------------------------------------------------------
 
-app.post('/login', (req, res, next) => {
+app.post('/admin/login/user', (req, res, next) => {
     db.query(
         'select * from user where user_account = ? and user_password = ?',
         [req.body.account, req.body.password],
         (err, result) => {
             if(err) {
-                throw err;
+                // throw err;
                 return res.status(400).send({
                     message: err
                 })
@@ -84,6 +85,9 @@ app.post('/login', (req, res, next) => {
                     user: result[0]
                 })
             }
+            // return res.status(400).send({
+            //     message: 'Account or password incorrect!'
+            // })
 
             // bcrypt.compare(
             //     req.query.password,
@@ -124,8 +128,13 @@ app.post('/login', (req, res, next) => {
     )
 })
 
-// app.post('/test', userMiddleware.isLoggedIn, (req, res, next) => {
-//     console.log(req.userData)
+app.get('/check/islogin', userMiddleware.isLoggedIn, (req, res, next) => {
+    console.log('req.userData')
+    res.send('this is secret content!');
+})
+// app.get('/check/islogin', (req, res, next) => {
+//     console.log(req.headers.authorization)
+//     console.log('req.userData')
 //     res.send('this is secret content!');
 // })
 // app.post('/login', loginRoute);
@@ -317,6 +326,22 @@ app.post('/admin/home/proclamation/post', function(req, res){
     })
 })
 
+// app.put('/test', function(req, res){
+//     uploadStore(req, res).then(fileSrc => {
+//         db.query(
+//             'update store set sto_first_img = ? where sto_id = ?',
+//             [fileSrc, req.body.id],
+//             function (error, data) {
+//                 if(error){
+//                     res.send(JSON.stringify(error));
+//                 }else{
+//                     res.send(JSON.stringify(data));
+//                 }
+//             }
+//         )
+//     })
+// })
+
 app.put('/admin/home/proclamation/edit/file', function(req, res){
     uploadNews(req, res).then(fileSrc => {
         db.query(
@@ -397,6 +422,25 @@ app.put('/admin/store/edit/file', function(req, res){
     uploadStore(req, res).then(fileSrc => {
         const deleteTarget = req.body.delete.replace('http://localhost:3001/file/', './public/')
         fs.unlinkSync(deleteTarget)
+        db.query(
+            'update store set sto_name = ?, sto_class = ?, sto_img = ?, sto_tel = ?, sto_location = ?, sto_pay1 = ?, sto_pay2 = ?, sto_pay3 = ?, sto_pay4 = ?, sto_pay5 = ?, sto_pay6 = ?, sto_pay7 = ?, sto_thu = ?, sto_fri = ?, sto_sat = ?, sto_sun = ?, sto_fb = ?, sto_ins = ?, sto_line = ?, sto_info = ?, sto_sta = ?, sto_main = ?, sto_first_img = ? where sto_id = ?',
+            [req.body.name, req.body.type, req.body.logo, req.body.tel, req.body.location, req.body.pay1, req.body.pay2, req.body.pay3, req.body.pay4, req.body.pay5, req.body.pay6, req.body.pay7, req.body.thu, req.body.fri, req.body.sat, req.body.sun, req.body.fb, req.body.ig, req.body.line, req.body.info, req.body.state, req.body.isMain, fileSrc, req.body.id],
+            function (error, data) {
+                if(error){
+                    res.send(JSON.stringify(error));
+                }else{
+                    res.send(JSON.stringify(data));
+                }
+            }
+        )
+    })
+})
+
+// 店家管理/店家/編輯/不用刪檔案
+app.put('/admin/store/edit/file/nodelete', function(req, res){
+    uploadStore(req, res).then(fileSrc => {
+        // const deleteTarget = req.body.delete.replace('http://localhost:3001/file/', './public/')
+        // fs.unlinkSync(deleteTarget)
         db.query(
             'update store set sto_name = ?, sto_class = ?, sto_img = ?, sto_tel = ?, sto_location = ?, sto_pay1 = ?, sto_pay2 = ?, sto_pay3 = ?, sto_pay4 = ?, sto_pay5 = ?, sto_pay6 = ?, sto_pay7 = ?, sto_thu = ?, sto_fri = ?, sto_sat = ?, sto_sun = ?, sto_fb = ?, sto_ins = ?, sto_line = ?, sto_info = ?, sto_sta = ?, sto_main = ?, sto_first_img = ? where sto_id = ?',
             [req.body.name, req.body.type, req.body.logo, req.body.tel, req.body.location, req.body.pay1, req.body.pay2, req.body.pay3, req.body.pay4, req.body.pay5, req.body.pay6, req.body.pay7, req.body.thu, req.body.fri, req.body.sat, req.body.sun, req.body.fb, req.body.ig, req.body.line, req.body.info, req.body.state, req.body.isMain, fileSrc, req.body.id],
@@ -528,9 +572,6 @@ app.put('/admin/activity/edit/file/multiple', function(req, res){
 })
 
 
-
-
-
 // 店家多張圖片取得
 app.get('/admin/store/get/file/multiple', function(req, res){
     db.query(
@@ -546,21 +587,38 @@ app.get('/admin/store/get/file/multiple', function(req, res){
     )
 })
 
-// 店家多張圖片上傳(目的只用於開設資料列，不用上傳圖片)
+// 店家多張圖片上傳
 app.post('/admin/store/post/file/multiple', function(req, res){
-    db.query(
-        'insert into activity_img (act_id) values (?)',
-        [req.body.id],
-        function (error, data) {
-            if(error){
-                res.send(JSON.stringify(error));
-            }else{
-                res.send(JSON.stringify(data));
+    uploadMuitiStore(req, res).then(fileSrc => {
+        db.query(
+            'insert into store_img (sto_id, sto_img_url) values (?, ?)',
+            [req.body.id, fileSrc],
+            function (error, data) {
+                if(error){
+                    res.send(JSON.stringify(error));
+                }else{
+                    res.send(JSON.stringify(data));
+                }
             }
-        }
-    )
+        )
+    })
 })
 
+// app.put('/test', function(req, res){
+//     uploadMuitiStore(req, res).then(fileSrc => {
+//         db.query(
+//             'update store_img set sto_img_url = ? where sto_id = ?',
+//             [fileSrc, req.body.id],
+//             function (error, data) {
+//                 if(error){
+//                     res.send(JSON.stringify(error));
+//                 }else{
+//                     res.send(JSON.stringify(data));
+//                 }
+//             }
+//         )
+//     })
+// })
 
 
 // 店家多張圖片編輯
@@ -590,7 +648,7 @@ app.put('/admin/store/edit/file/multiple', function(req, res){
         }
         
         db.query(
-            'update store_img set store_img_url = ? where act_id = ?',
+            'update store_img set sto_img_url = ? where sto_id = ?',
             [finalUrl, req.body.id],
             // [req.body, 'test', 'test', 'test', 'test', 'test', 'test', 2, true, imgsrc, '1', 'test'],
             function (error, data) {
@@ -602,4 +660,77 @@ app.put('/admin/store/edit/file/multiple', function(req, res){
             }
         )
     })
+})
+
+
+
+let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: "park2Taichung@gmail.com",  // 
+        pass: "frqhxqfmhusclvjd" // 
+    }
+});
+
+
+
+
+// 寄信功能/合約
+app.post('/mail/contract/post', function(req, res){
+    let mailOptions = {
+        from: "park2Taichung@gmail.com",  // 發信者
+        to: req.body.target, // 收信者
+        subject: req.body.title,  // 郵件title
+        text: req.body.content,
+        attachments: [
+            {
+                filename: 'contract.pdf',
+                path: './contract.pdf'
+            }
+        ]
+        // text: '',  // 內文
+        // html: "<h1>Heading</h1><a href='https://en.wikipedia.org/'>Wiki</a>"  // html版本內文
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log("訊息發送: " + info.response);
+        }
+    });
+})
+
+// 寄信功能/登入頁連結及帳號密碼
+app.post('/mail/login/post', function(req, res){
+    let mailOptions = {
+        from: "park2Taichung@gmail.com",  // 發信者
+        to: req.body.target, // 收信者
+        subject: req.body.title,  // 郵件title
+        text: req.body.content
+        // text: '',  // 內文
+        // html: "<h1>Heading</h1><a href='https://en.wikipedia.org/'>Wiki</a>"  // html版本內文
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log("訊息發送: " + info.response);
+        }
+    });
+})
+
+
+// 新增user帳號
+app.post('/admin/account/post', function(req, res){
+    db.query(
+        'insert into user (sto_id, user_account, user_password, user_name, user_level) values (?, ?, ?, ?, ?)',
+        [req.body.id, req.body.account, req.body.password, req.body.name, req.body.level],
+        function (error, data) {
+            if(error){
+                res.send(JSON.stringify(error));
+            }else{
+                res.send(JSON.stringify(data));
+            }
+        }
+    )
 })

@@ -121,4 +121,19 @@ router.delete('/market/delete', function(req, res) {
     )
 })
 
+// 新增市集
+router.post('/market/add', function(req, res) {
+    connect.query(
+        'insert into market (market_title, market_cnt) values (?, ?)',
+        [req.body.title, req.body.count],
+        function (error, data) {
+            if(error){
+                res.send(JSON.stringify(error));
+            }else{
+                res.send(JSON.stringify(data));
+            }     
+        }
+    )
+})
+
 module.exports = router

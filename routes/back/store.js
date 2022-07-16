@@ -62,10 +62,24 @@ router.get('/apply/get', function(req, res){
 // })
 
 // 店家管理/店家/編輯
+// router.put('/edit', function(req, res){
+//     connect.query(
+//         'update store set sto_name = ?, sto_class = ?, sto_tel = ?, sto_location = ?, sto_pay1 = ?, sto_pay2 = ?, sto_pay3 = ?, sto_pay4 = ?, sto_pay5 = ?, sto_pay6 = ?, sto_pay7 = ?, sto_thu = ?, sto_fri = ?, sto_sat = ?, sto_sun = ?, sto_fb = ?, sto_ins = ?, sto_line = ?, sto_info = ?, sto_sta = ?, sto_main = ?  where sto_id = ?',
+//         [req.body.name, req.body.type, req.body.tel, req.body.location, req.body.pay1, req.body.pay2, req.body.pay3, req.body.pay4, req.body.pay5, req.body.pay6, req.body.pay7, req.body.thu, req.body.fri, req.body.sat, req.body.sun, req.body.fb, req.body.ig, req.body.line, req.body.info, req.body.state, req.body.isMain, req.body.id],
+//         function (error, data) {
+//             if(error){
+//                 res.send(JSON.stringify(error));
+//             }else{
+//                 res.send(JSON.stringify(data));
+//             }
+//         }
+//     )
+// })
 router.put('/edit', function(req, res){
+    console.log('hello')
     connect.query(
-        'update store set sto_name = ?, sto_class = ?, sto_tel = ?, sto_location = ?, sto_pay1 = ?, sto_pay2 = ?, sto_pay3 = ?, sto_pay4 = ?, sto_pay5 = ?, sto_pay6 = ?, sto_pay7 = ?, sto_thu = ?, sto_fri = ?, sto_sat = ?, sto_sun = ?, sto_fb = ?, sto_ins = ?, sto_line = ?, sto_info = ?, sto_sta = ?, sto_main = ?  where sto_id = ?',
-        [req.body.name, req.body.type, req.body.tel, req.body.location, req.body.pay1, req.body.pay2, req.body.pay3, req.body.pay4, req.body.pay5, req.body.pay6, req.body.pay7, req.body.thu, req.body.fri, req.body.sat, req.body.sun, req.body.fb, req.body.ig, req.body.line, req.body.info, req.body.state, req.body.isMain, req.body.id],
+        'update store set sto_name = ?, sto_class = ?, sto_tel = ?, sto_thu = ?, sto_fri = ?, sto_sat = ?, sto_sun = ?, sto_fb = ?, sto_ins = ?, sto_info = ?, sto_main = ?  where sto_id = ?',
+        [req.body.name, req.body.type, req.body.tel, req.body.thu, req.body.fri, req.body.sat, req.body.sun, req.body.fb, req.body.ig, req.body.info, req.body.state, req.body.id],
         function (error, data) {
             if(error){
                 res.send(JSON.stringify(error));
