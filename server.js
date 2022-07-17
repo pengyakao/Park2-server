@@ -51,6 +51,8 @@ app.use('/self/store', backSelfStore)
 const backStationed= require('./routes/back/apply')
 app.use('/admin/apply', backStationed)
 
+const backUser = require('./routes/back/user')
+app.use('/user', backUser)
 
 // 登入 API ----------------------------------------------------------------------------
 
