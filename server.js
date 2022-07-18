@@ -398,9 +398,22 @@ app.put('/admin/activity/edit/file', function(req, res){
     })
 })
 
-
-
-// 後台活動新增---------------------------------------------------------
+// 店家管理/店家/logo/編輯
+app.put('/admin/store/logo/edit', function(req, res){
+    uploadStore(req, res).then(fileSrc => {
+        db.query(
+            'update store set sto_img = ? where sto_id = ?',
+            [fileSrc, req.body.id],
+            function (error, data) {
+                if(error){
+                    res.send(JSON.stringify(error));
+                }else{
+                    res.send(JSON.stringify(data));
+                }
+            }
+        )
+    })
+})
 
 // 店家管理/店家/新增
 app.post('/admin/store/post', function(req, res){

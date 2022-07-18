@@ -123,6 +123,7 @@ router.delete('/market/delete', function(req, res) {
 
 // 新增市集
 router.post('/market/add', function(req, res) {
+    console.log('test')
     connect.query(
         'insert into market (market_title, market_cnt) values (?, ?)',
         [req.body.title, req.body.count],
@@ -142,14 +143,29 @@ router.post('/market/add', function(req, res) {
 // 新增店家
 router.post('/store/add', function(req, res) {
     connect.query(
-        'insert into store (sto_apply_id, sto_name, sto_location, sto_class, sto_tel, sto_sta) values (?, ?, ?, ?, ?, ?)',
-        [req.body.id, req.body.brand, req.body.location, req.body.type, req.body.tel, req.body.state],
+        'insert into store (sto_apply_id, sto_name, sto_location, sto_class, sto_tel, sto_sta, sto_floor) values (?, ?, ?, ?, ?, ?, ?)',
+        [req.body.id, req.body.brand, req.body.location, req.body.type, req.body.tel, req.body.state, req.body.floor],
         function (error, data) {
             if(error){
                 res.send(JSON.stringify(error));
             }else{
                 res.send(JSON.stringify(data));
             }     
+        }
+    )
+})
+
+// 進駐管理/店家/取得
+router.get('/store/list/get', function(req, res){
+    connect.query(
+        'select * from store',
+        [],
+        function (error, data) {
+            if(error){
+                res.send(JSON.stringify(error));
+            }else{
+                res.send(JSON.stringify(data));
+            }
         }
     )
 })
