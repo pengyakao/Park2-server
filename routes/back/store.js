@@ -79,7 +79,7 @@ router.put('/edit', function(req, res){
     console.log('hello')
     connect.query(
         'update store set sto_name = ?, sto_class = ?, sto_tel = ?, sto_thu = ?, sto_fri = ?, sto_sat = ?, sto_sun = ?, sto_fb = ?, sto_ins = ?, sto_info = ?, sto_main = ?  where sto_id = ?',
-        [req.body.name, req.body.type, req.body.tel, req.body.thu, req.body.fri, req.body.sat, req.body.sun, req.body.fb, req.body.ig, req.body.info, req.body.state, req.body.id],
+        [req.body.name, req.body.type, req.body.tel, req.body.thu, req.body.fri, req.body.sat, req.body.sun, req.body.fb, req.body.ig, req.body.info, req.body.isMain, req.body.id],
         function (error, data) {
             if(error){
                 res.send(JSON.stringify(error));
