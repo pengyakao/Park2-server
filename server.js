@@ -438,8 +438,8 @@ app.put('/admin/store/edit/file', function(req, res){
         const deleteTarget = req.body.delete.replace('http://localhost:3001/file/', './public/')
         fs.unlinkSync(deleteTarget)
         db.query(
-            'update store set sto_name = ?, sto_class = ?, sto_img = ?, sto_tel = ?, sto_location = ?, sto_pay1 = ?, sto_pay2 = ?, sto_pay3 = ?, sto_pay4 = ?, sto_pay5 = ?, sto_pay6 = ?, sto_pay7 = ?, sto_thu = ?, sto_fri = ?, sto_sat = ?, sto_sun = ?, sto_fb = ?, sto_ins = ?, sto_line = ?, sto_info = ?, sto_sta = ?, sto_main = ?, sto_first_img = ? where sto_id = ?',
-            [req.body.name, req.body.type, req.body.logo, req.body.tel, req.body.location, req.body.pay1, req.body.pay2, req.body.pay3, req.body.pay4, req.body.pay5, req.body.pay6, req.body.pay7, req.body.thu, req.body.fri, req.body.sat, req.body.sun, req.body.fb, req.body.ig, req.body.line, req.body.info, req.body.state, req.body.isMain, fileSrc, req.body.id],
+            'update store set sto_name = ?, sto_class = ?, sto_tel = ?, sto_location = ?, sto_pay1 = ?, sto_pay2 = ?, sto_pay3 = ?, sto_pay4 = ?, sto_pay5 = ?, sto_pay6 = ?, sto_pay7 = ?, sto_thu = ?, sto_fri = ?, sto_sat = ?, sto_sun = ?, sto_fb = ?, sto_ins = ?, sto_line = ?, sto_info = ?, sto_sta = ?, sto_main = ?, sto_first_img = ? where sto_id = ?',
+            [req.body.name, req.body.type, req.body.tel, req.body.location, req.body.pay1, req.body.pay2, req.body.pay3, req.body.pay4, req.body.pay5, req.body.pay6, req.body.pay7, req.body.thu, req.body.fri, req.body.sat, req.body.sun, req.body.fb, req.body.ig, req.body.line, req.body.info, req.body.state, req.body.isMain, fileSrc, req.body.id],
             function (error, data) {
                 if(error){
                     res.send(JSON.stringify(error));
