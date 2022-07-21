@@ -651,6 +651,16 @@ app.put('/admin/store/edit/file/multiple', function(req, res){
         }else{
             finalUrl = fileSrc
         }
+        // if(stayTarget.length != 0){
+        //     let concatStayUrl = []
+        //     stayTarget.forEach(e=>{
+        //         concatStayUrl.push(e)
+        //     })
+        //     let stayUrl = concatStayUrl.join(',')
+        //     finalUrl = stayUrl + ',' + fileSrc
+        // }else{
+        //     finalUrl = fileSrc
+        // }
 
         let deleteTarget = JSON.parse(req.body.delete).filter(e=>e != '')
 
